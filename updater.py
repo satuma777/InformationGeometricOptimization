@@ -22,10 +22,10 @@ class NaturalGradientUpdater(Updater):
     def __init__(self):
         super(Updater, self).__init__()
     
-    def update(self, fitness, sample):
+    def update(self, evals, sample):
         self.t += 1
         
-        weight = self.w_func(fitness)
+        weight = self.w_func(evals)
         
         if self.target.model_class in 'Gaussian':
             self.gaussian_param_update(weight, sample)
@@ -49,6 +49,7 @@ class NaturalGradientUpdater(Updater):
         pass
 
     def _compute_natural_grad_gaussian(self, weight, sample, mean, var):
+        xp = self.target.xp
         derivation = sample - mean
         w_der = weight * derivation.T
         grad_m = w_der.sum(axis=1)
@@ -57,7 +58,7 @@ class NaturalGradientUpdater(Updater):
             norm_w_der = xp.diag(xp.dot(w_der, w_der.T))
             grad_var = (xp.sum(weight * norm_w_der) / self.target.dim) - (xp.sum(weight) * var)
         elif self.target.model_class in 'Separable':
-            grad_var = (w_der * derivation.T).sum(axis=1) - (weights.sum() * var)
+            grad_var = (w_der * derivation.T).sum(axis=1) - (weight.sum() * var)
         else:
             grad_var = xp.dot(w_der, derivation) - (weight.sum() * var)
         
