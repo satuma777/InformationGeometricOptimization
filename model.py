@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import cupy as cp
 from math import log, pi
 
 
@@ -64,7 +65,7 @@ class MultiVariableGaussian(ProbabilityDistribution):
         else:
             self.stepsize = stepsize
     
-    def log_likelihood(self, sample):
+    def calculate_log_likelihood(self, sample):
         xp = self.xp
         pop_size = sample.shape[0]
         deviation = sample - self.mean
@@ -80,10 +81,15 @@ class MultiVariableGaussian(ProbabilityDistribution):
         loglikelihood = -0.5 * (self.dim * log(2 * pi) + log_Cdet + xp.diag(xp.dot(Cinv_der, deviation.T)))
         
         return loglikelihood
+    
+    def use_gpu(self):
+        self.xp = cp
 
 
 if __name__ == '__main__':
     x = MultiVariableGaussian(1)
     s = x.sampling(3)
-    lll = x.log_likelihood(s)
-    print lll
+    s -= s
+    print s
+    lll = x.calculate_log_likelihood(s)
+    assert np.exp(lll) == 1. / np.sqrt(2 * np.pi),  "Invalid value that likelihood."
