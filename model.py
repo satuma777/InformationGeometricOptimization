@@ -3,7 +3,7 @@
 import numpy as np
 try:
     import cupy as cp
-except:
+except ImportError:
     None
 from math import log, pi
 
