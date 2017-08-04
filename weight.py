@@ -2,7 +2,7 @@ import numpy as np
 
 
 def cma_like_weight(q_plus, q_minus, xp):
-    weight_plus = -2. * xp.log(2. * qplus)
+    weight_plus = -2. * xp.log(2. * q_plus)
     weight_plus[xp.where(q_plus < 0.5)] = 0
     
     if q_minus is not None:
@@ -31,15 +31,17 @@ class QuantileBasedWeight(object):
         self.xp = xp
     
     def __call__(self, evaluation):
-        pop_size = evaluation.size()
+        xp = self.xp
+        pop_size = len(evaluation)
         q_plus = None
         q_minus = None
         
         if self.min:
-            q_plus = xp.array([evaluation[xp.where(evaluation <= eval)].size() for eval in evaluation])
-            q_plus /= pop_size
+            q_plus = xp.array([len(evaluation[xp.where(evaluation <= eval)]) for eval in evaluation])
+            print(q_plus)
+            q_plus = q_plus / pop_size
             if self.tie_case:
-                q_minus = xp.array([evaluation[xp.where(evaluation < eval)].size() for eval in evaluation])
+                q_minus = xp.array([len(evaluation[xp.where(evaluation < eval)]) for eval in evaluation])
                 q_minus /= pop_size
         
         else:
@@ -49,6 +51,6 @@ class QuantileBasedWeight(object):
                 q_minus = xp.array([evaluation[xp.where(evaluation > eval)].size() for eval in evaluation])
                 q_minus /= pop_size
         
-        return self.non_inc_func(q_plus, q_minus, self.xp)
+        return self.non_inc_func(q_plus, q_minus, self.xp) / pop_size
 
 #TODO: LebesgueMeasureBasedWeight [Akimoto2012(GECCO2012)]
