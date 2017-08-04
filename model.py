@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import cupy as cp
+try:
+    import cupy as cp
+except:
+    None
 from math import log, pi
 
 
@@ -47,7 +50,10 @@ class MultiVariableGaussian(ProbabilityDistribution):
         return self.mean, self.var, self.stepsize
     
     def set_param(self, mean=None, var=None, stepsize=None):
-        assert mean.size == dim and var.size == dim * dim, \
+        dim = self.dim
+        xp = self.xp
+        
+        assert mean.size == dim and var.size == dim ** 2, \
             "Invalid value that dimensions DON'T match."
         
         if mean is None:
@@ -86,10 +92,10 @@ class MultiVariableGaussian(ProbabilityDistribution):
         self.xp = cp
 
 
-if __name__ == '__main__':
-    x = MultiVariableGaussian(1)
-    s = x.sampling(3)
-    s -= s
-    print s
-    lll = x.calculate_log_likelihood(s)
-    assert np.exp(lll) == 1. / np.sqrt(2 * np.pi),  "Invalid value that likelihood."
+# if __name__ == '__main__':
+#     x = MultiVariableGaussian(1)
+#     s = x.sampling(3)
+#     s -= s
+#     print s
+#     lll = x.calculate_log_likelihood(s)
+#     assert np.exp(lll) == 1. / np.sqrt(2 * np.pi),  "Invalid value that likelihood."

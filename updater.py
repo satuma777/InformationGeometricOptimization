@@ -5,7 +5,7 @@ from math import log, pi
 
 class Updater(object):
     """Base class of all updater."""
-    def setup(self, distribution, weight_function, lr):
+    def __init__(self, distribution, weight_function, lr):
         self.target = distribution
         self.t = 0
         self.w_func = weight_function
@@ -19,8 +19,15 @@ class Updater(object):
 
 
 class NaturalGradientUpdater(Updater):
-    def __init__(self):
-        super(Updater, self).__init__()
+    def __init__(self, distribution, weight_function, lr):
+        self.target = distribution
+        self.t = 0
+        self.w_func = weight_function
+        self.lr = lr
+
+        if 'mean' not in lr or 'var' not in lr:
+            print('lr does not have attribute "mean" or "var". ')
+            exit(1)
     
     def update(self, evals, sample):
         self.t += 1
@@ -36,7 +43,7 @@ class NaturalGradientUpdater(Updater):
         #TODO:Implementaion of Comulative Step-size Update
         #TODO:Implementaion of rank-one Update
         
-        mean, var = self.target.get_param()
+        mean, var, stepsize = self.target.get_param()
         grad_m, grad_var = self._compute_natural_grad_gaussian(weight, sample, mean, var)
        
         new_mean = mean + self.lr['mean'] * grad_m
