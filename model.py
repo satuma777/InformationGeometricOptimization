@@ -50,7 +50,10 @@ class MultiVariableGaussian(ProbabilityDistribution):
         return self.mean, self.var, self.stepsize
     
     def set_param(self, mean=None, var=None, stepsize=None):
-        assert mean.size == dim and var.size == dim * dim, \
+        dim = self.dim
+        xp = self.xp
+        
+        assert mean.size == dim and var.size == dim ** 2, \
             "Invalid value that dimensions DON'T match."
         
         if mean is None:

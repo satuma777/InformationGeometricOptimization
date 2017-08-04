@@ -24,6 +24,10 @@ class NaturalGradientUpdater(Updater):
         self.t = 0
         self.w_func = weight_function
         self.lr = lr
+
+        if 'mean' not in lr or 'var' not in lr:
+            print('lr does not have attribute "mean" or "var". ')
+            exit(1)
     
     def update(self, evals, sample):
         self.t += 1
@@ -39,7 +43,7 @@ class NaturalGradientUpdater(Updater):
         #TODO:Implementaion of Comulative Step-size Update
         #TODO:Implementaion of rank-one Update
         
-        mean, var = self.target.get_param()
+        mean, var, stepsize = self.target.get_param()
         grad_m, grad_var = self._compute_natural_grad_gaussian(weight, sample, mean, var)
        
         new_mean = mean + self.lr['mean'] * grad_m

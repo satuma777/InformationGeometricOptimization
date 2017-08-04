@@ -37,19 +37,18 @@ class QuantileBasedWeight(object):
         q_minus = None
         
         if self.min:
-            q_plus = xp.array([len(evaluation[xp.where(evaluation <= eval)]) for eval in evaluation])
-            print(q_plus)
+            q_plus = xp.array([(evaluation <= eval).sum() for eval in evaluation])
             q_plus = q_plus / pop_size
             if self.tie_case:
-                q_minus = xp.array([len(evaluation[xp.where(evaluation < eval)]) for eval in evaluation])
-                q_minus /= pop_size
+                q_minus = xp.array([(evaluation < eval).sum() for eval in evaluation])
+                q_minus = q_minus / pop_size
         
         else:
-            q_plus = xp.array([evaluation[xp.where(evaluation >= eval)].size() for eval in evaluation])
-            q_plus /= pop_size
+            q_plus = xp.array([(evaluation >= eval).sum() for eval in evaluation])
+            q_plus = q_plus / pop_size
             if self.tie_case:
-                q_minus = xp.array([evaluation[xp.where(evaluation > eval)].size() for eval in evaluation])
-                q_minus /= pop_size
+                q_minus = xp.array([(evaluation > eval).sum() for eval in evaluation])
+                q_minus = q_minus / pop_size
         
         return self.non_inc_func(q_plus, q_minus, self.xp) / pop_size
 
