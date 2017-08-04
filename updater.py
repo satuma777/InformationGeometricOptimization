@@ -5,7 +5,7 @@ from math import log, pi
 
 class Updater(object):
     """Base class of all updater."""
-    def setup(self, distribution, weight_function, lr):
+    def __init__(self, distribution, weight_function, lr):
         self.target = distribution
         self.t = 0
         self.w_func = weight_function
@@ -19,8 +19,11 @@ class Updater(object):
 
 
 class NaturalGradientUpdater(Updater):
-    def __init__(self):
-        super(Updater, self).__init__()
+    def __init__(self, distribution, weight_function, lr):
+        self.target = distribution
+        self.t = 0
+        self.w_func = weight_function
+        self.lr = lr
     
     def update(self, evals, sample):
         self.t += 1
