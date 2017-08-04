@@ -75,7 +75,7 @@ class MultiVariableGaussian(ProbabilityDistribution):
         xp = self.xp
         pop_size = sample.shape[0]
         deviation = sample - self.mean
-        comats = xp.array([self.stepsize * self.stepsize * self.var for _ in xrange(pop_size)])
+        comats = xp.array([self.stepsize * self.stepsize * self.var for _ in range(pop_size)])
         
         try:
             Cinv_der = xp.linalg.solve(comats, deviation)
